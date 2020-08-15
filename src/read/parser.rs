@@ -182,7 +182,7 @@ parser! {
         rule byte_vector() -> Vec<u8>
             = "#u8(" _* bs:byte()**(_*) _* ")"  { bs }
         rule byte() -> u8
-            = i:integer()   {? i.to_u8().map_or(Err("invalid byte"), |b| Ok(b)) }
+            = i:integer()   {? i.to_u8().map_or(Err("invalid byte"), Ok) }
 
         rule _() = [' '|'\t'|'\r'|'\n']
     }

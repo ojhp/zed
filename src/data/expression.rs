@@ -131,7 +131,7 @@ impl Display for Expression {
             write!(f, ")")
         }
 
-        fn fmt_vector<T: Display>(prefix: &str, items: &Vec<T>, f: &mut Formatter) -> FmtResult {
+        fn fmt_vector<T: Display>(prefix: &str, items: &[T], f: &mut Formatter) -> FmtResult {
             write!(f, "{}(", prefix)?;
 
             let mut first = true;
