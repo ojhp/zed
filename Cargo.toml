@@ -1,0 +1,19 @@
+[package]
+name = "zed"
+version = "0.1.0"
+authors = ["Owen Platt <owen@owenplatt.com>"]
+edition = "2018"
+description = "A scheme implementation"
+readme = "README.md"
+repository = "https://github.com/ojhp/zed"
+license = "MIT"
+keywords = ["scheme", "lisp", "language"]
+
+[dependencies]
+lazy_static = "^1.4"
+num = "^0.3"
+peg = "^0.6"
+regex = "^1.3"
+
+[dev-dependencies]
+test-case = "^1.0"

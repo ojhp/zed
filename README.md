@@ -1,0 +1,1 @@
+# zed ![master](https://github.com/ojhp/zed/workflows/master/badge.svg)
