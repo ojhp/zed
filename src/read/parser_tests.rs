@@ -142,6 +142,14 @@ fn byte_vector_parsing(input: &str) -> Expr {
     parse_single(input)
 }
 
+#[test_case("'a" => list(vec![symbol("quote"), symbol("a")]); "quoted form")]
+#[test_case("`a" => list(vec![symbol("quasiquote"), symbol("a")]); "quasiquoted form")]
+#[test_case(",a" => list(vec![symbol("unquote"), symbol("a")]); "unquoted form")]
+#[test_case(",@a" => list(vec![symbol("unquote-splicing"), symbol("a")]); "spliced unquote form")]
+fn wrapped_form_parsing(input: &str) -> Expr {
+    parse_single(input)
+}
+
 #[test_case("a ;line comment\n b" => vec![symbol("a"), symbol("b")]; "line comment")]
 #[test_case("a #| block | \r\n #| comment |#b" => vec![symbol("a"), symbol("b")]; "block comment")]
 #[test_case("a #; \n b c" => vec![symbol("a"), symbol("c")]; "single item comment")]

@@ -46,6 +46,7 @@ parser! {
             / list()
             / v:vector()        { Rc::new(Expression::Vector(v)) }
             / b:byte_vector()   { Rc::new(Expression::ByteVector(b)) }
+            / wrapped_form()
 
         rule boolean() -> bool
             = ("#true" / "#t")  { true }
@@ -184,6 +185,19 @@ parser! {
             = "#u8(" _* bs:byte()**(_*) _* ")"  { bs }
         rule byte() -> u8
             = i:integer()   {? i.to_u8().map_or(Err("invalid byte"), Ok) }
+
+        rule wrapped_form() -> Expr
+            = t:wrap_type() _* e:expr()
+                { Rc::new(Expression::Pair(
+                    Rc::new(Expression::Symbol(String::from(t))),
+                    Rc::new(Expression::Pair(
+                        e,
+                        Rc::new(Expression::Nil))))) }
+        rule wrap_type() -> &'static str
+            = "'"       { "quote" }
+            / "`"       { "quasiquote" }
+            / ",@"      { "unquote-splicing" }
+            / ","       { "unquote" }
 
         rule _() = whitespace() / comment()
         rule whitespace() = [' '|'\t'|'\r'|'\n']
