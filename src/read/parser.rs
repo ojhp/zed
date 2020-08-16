@@ -184,7 +184,12 @@ parser! {
         rule byte() -> u8
             = i:integer()   {? i.to_u8().map_or(Err("invalid byte"), Ok) }
 
-        rule _() = [' '|'\t'|'\r'|'\n']
+        rule _() = whitespace() / comment()
+        rule whitespace() = [' '|'\t'|'\r'|'\n']
+        rule comment()
+            = ";" (!['\r'|'\n'] [_])* ("\r\n" / "\r" / "\n")
+            / "#|" (!['|'] [_] / "|" !['#'] [_])* "|#"
+            / "#;" _* expr()
     }
 }
 
