@@ -66,6 +66,7 @@ parser! {
             / r:creal() "-i"                { Complex::new(r, -1.0) }
             / "+i" !"nf.0"                  { Complex::new(0.0, 1.0) }
             / "-i" !"nf.0"                  { Complex::new(0.0, -1.0) }
+            / r:creal() "@" t:creal()       { Complex::new(r * t.cos(), r * t.sin()) }
         rule creal() -> f64
             = "+"? r:cureal()   { r }
             / "-" r:cureal()    { -r }

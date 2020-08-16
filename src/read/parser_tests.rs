@@ -73,7 +73,8 @@ fn real_infinity_parsing(input: &str, positive: bool) {
 #[test_case("+inf.0-inf.0i" => number(complex(f64::INFINITY, f64::NEG_INFINITY)); "infinite complex")]
 #[test_case("+i" => number(complex(0.0, 1.0)); "unit imaginary")]
 #[test_case("-i" => number(complex(0.0, -1.0)); "negative unit imaginary")]
-fn imaginary_parsing(input: &str) -> Expr {
+#[test_case("4@0" => number(complex(4.0, 0.0)); "polar")]
+fn complex_parsing(input: &str) -> Expr {
     parse_single(input)
 }
 
