@@ -46,6 +46,7 @@ parser! {
             / list()
             / v:vector()        { Rc::new(Expression::Vector(v)) }
             / b:byte_vector()   { Rc::new(Expression::ByteVector(b)) }
+            / wrapped_form()
 
         rule boolean() -> bool
             = ("#true" / "#t")  { true }
@@ -66,6 +67,7 @@ parser! {
             / r:creal() "-i"                { Complex::new(r, -1.0) }
             / "+i" !"nf.0"                  { Complex::new(0.0, 1.0) }
             / "-i" !"nf.0"                  { Complex::new(0.0, -1.0) }
+            / r:creal() "@" t:creal()       { Complex::new(r * t.cos(), r * t.sin()) }
         rule creal() -> f64
             = "+"? r:cureal()   { r }
             / "-" r:cureal()    { -r }
@@ -184,7 +186,25 @@ parser! {
         rule byte() -> u8
             = i:integer()   {? i.to_u8().map_or(Err("invalid byte"), Ok) }
 
-        rule _() = [' '|'\t'|'\r'|'\n']
+        rule wrapped_form() -> Expr
+            = t:wrap_type() _* e:expr()
+                { Rc::new(Expression::Pair(
+                    Rc::new(Expression::Symbol(String::from(t))),
+                    Rc::new(Expression::Pair(
+                        e,
+                        Rc::new(Expression::Nil))))) }
+        rule wrap_type() -> &'static str
+            = "'"       { "quote" }
+            / "`"       { "quasiquote" }
+            / ",@"      { "unquote-splicing" }
+            / ","       { "unquote" }
+
+        rule _() = whitespace() / comment()
+        rule whitespace() = [' '|'\t'|'\r'|'\n']
+        rule comment()
+            = ";" (!['\r'|'\n'] [_])* ("\r\n" / "\r" / "\n")
+            / "#|" (!['|'] [_] / "|" !['#'] [_])* "|#"
+            / "#;" _* expr()
     }
 }
 

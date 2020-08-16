@@ -11,7 +11,7 @@ use crate::data::test_helpers::*;
 #[test_case("#true" => boolean(true); "long true")]
 #[test_case("#false" => boolean(false); "long false")]
 fn boolean_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("123456789" => number(integer("123456789")); "positive decimal")]
@@ -23,7 +23,7 @@ fn boolean_parsing(input: &str) -> Expr {
 #[test_case("#xaf07e" => number(integer("716926")); "positive hexadecimal")]
 #[test_case("#x-23d5c" => number(integer("-146780")); "negative hexadecimal")]
 fn integer_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("12/34" => number(rational("12", "34")); "decimal")]
@@ -32,7 +32,7 @@ fn integer_parsing(input: &str) -> Expr {
 #[test_case("#o741/356" => number(rational("481", "238")); "octal")]
 #[test_case("#x-8fe/-3e" => number(rational("2302", "62")); "hexadecimal")]
 fn rational_parsein(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("12.34" => number(real(12.34)); "simple")]
@@ -43,13 +43,13 @@ fn rational_parsein(input: &str) -> Expr {
 #[test_case("+inf.0" => number(real(f64::INFINITY)); "positive infinity")]
 #[test_case("-inf.0" => number(real(f64::NEG_INFINITY)); "negative infinity")]
 fn real_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("+nan.0", true; "positive")]
 #[test_case("-nan.0", false; "negative")]
 fn real_infinity_parsing(input: &str, positive: bool) {
-    let value = test_parser(input);
+    let value = parse_single(input);
 
     if let Expression::Number(Number::Real(n)) = *value {
         assert!(n.is_nan());
@@ -73,8 +73,9 @@ fn real_infinity_parsing(input: &str, positive: bool) {
 #[test_case("+inf.0-inf.0i" => number(complex(f64::INFINITY, f64::NEG_INFINITY)); "infinite complex")]
 #[test_case("+i" => number(complex(0.0, 1.0)); "unit imaginary")]
 #[test_case("-i" => number(complex(0.0, -1.0)); "negative unit imaginary")]
-fn imaginary_parsing(input: &str) -> Expr {
-    test_parser(input)
+#[test_case("4@0" => number(complex(4.0, 0.0)); "polar")]
+fn complex_parsing(input: &str) -> Expr {
+    parse_single(input)
 }
 
 #[test_case("#\\alarm" => character('\u{0007}'); "alarm")]
@@ -91,7 +92,7 @@ fn imaginary_parsing(input: &str) -> Expr {
 #[test_case("#\\x" => character('x'); "simple character")]
 #[test_case("#\\λ" => character('λ'); "extended character")]
 fn character_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("\"\"" => string(""); "empty string")]
@@ -100,7 +101,7 @@ fn character_parsing(input: &str) -> Expr {
 #[test_case("\"\\x14;\\x2400;\\xe0000;\"" => string("\u{0014}\u{2400}\u{e0000}"); "hex escapes")]
 #[test_case("\"first\\ \t\r\n \t second\"" => string("firstsecond"); "ignored spaces")]
 fn string_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("test" => symbol("test"); "simple text")]
@@ -114,7 +115,7 @@ fn string_parsing(input: &str) -> Expr {
 #[test_case("|\\a\\b\\t\\r\\n\\\\\\||" => symbol("\u{0007}\u{0008}\t\r\n\\|"); "mnemonic escapes")]
 #[test_case("|\\x14;\\x2400;\\xe0000;|" => symbol("\u{0014}\u{2400}\u{e0000}"); "hex escapes")]
 fn symbol_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("()" => nil(); "empty list")]
@@ -123,14 +124,14 @@ fn symbol_parsing(input: &str) -> Expr {
 #[test_case("(a . b)" => pair(symbol("a"), symbol("b")); "simple pair")]
 #[test_case("(a () (b c) . ())" => list(vec![symbol("a"), nil(), list(vec![symbol("b"), symbol("c")])]); "complex list")]
 fn list_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("#()" => vector(vec![]); "empty vector")]
 #[test_case("#(\t)" => vector(vec![]); "space-only vector")]
 #[test_case("#( a b  c)" => vector(vec![symbol("a"), symbol("b"), symbol("c")]); "simple vector")]
 fn vector_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
 #[test_case("#u8()" => byte_vector(vec![]); "empty byte vector")]
@@ -138,14 +139,36 @@ fn vector_parsing(input: &str) -> Expr {
 #[test_case("#u8(1 2 3)" => byte_vector(vec![1, 2, 3]); "simple byte vector")]
 #[test_case("#u8(#xf #o12 #d9)" => byte_vector(vec![15, 10, 9]); "complex bytes")]
 fn byte_vector_parsing(input: &str) -> Expr {
-    test_parser(input)
+    parse_single(input)
 }
 
-fn test_parser(input: &str) -> Expr {
+#[test_case("'a" => list(vec![symbol("quote"), symbol("a")]); "quoted form")]
+#[test_case("`a" => list(vec![symbol("quasiquote"), symbol("a")]); "quasiquoted form")]
+#[test_case(",a" => list(vec![symbol("unquote"), symbol("a")]); "unquoted form")]
+#[test_case(",@a" => list(vec![symbol("unquote-splicing"), symbol("a")]); "spliced unquote form")]
+fn wrapped_form_parsing(input: &str) -> Expr {
+    parse_single(input)
+}
+
+#[test_case("a ;line comment\n b" => vec![symbol("a"), symbol("b")]; "line comment")]
+#[test_case("a #| block | \r\n #| comment |#b" => vec![symbol("a"), symbol("b")]; "block comment")]
+#[test_case("a #; \n b c" => vec![symbol("a"), symbol("c")]; "single item comment")]
+fn comment_parsing(input: &str) -> Vec<Expr> {
+    parse_multiple(input)
+}
+
+fn parse_single(input: &str) -> Expr {
     match parse(input) {
         Ok(result) if result.len() < 1 => panic!("parsed no values"),
         Ok(result) if result.len() > 1 => panic!("parsed more than one value: {:?}", result),
         Err(err) => panic!("parser error: {}", err),
         Ok(mut result) => result.pop().unwrap()
+    }
+}
+
+fn parse_multiple(input: &str) -> Vec<Expr> {
+    match parse(input) {
+        Ok(result) => result,
+        Err(err) => panic!("parser error: {}", err),
     }
 }
