@@ -5,13 +5,18 @@ use std::io::Error as IoError;
 use peg::error::ParseError;
 use peg::str::LineCol;
 
+/// An error returned when there is a problem reading input.
 #[derive(Debug)]
 pub enum ReadError {
+    /// The end of the input stream has been reached.
     Eof,
+    /// An error occurred reading from the input stream.
     Io(IoError),
+    /// An error occurred parsing the input read from the input stream.
     Parse(ParseError<LineCol>),
 }
 
+/// A result type returned by functions and methods that read input.
 pub type ReadResult<T> = Result<T, ReadError>;
 
 impl Display for ReadError {

@@ -14,7 +14,7 @@ pub trait Read {
 /// An implementation of the `Read` trait which takes input from a
 /// buffered reader and buffers results.
 ///
-/// #Example
+/// # Example
 /// ```
 /// use std::io::BufReader;
 /// use std::rc::Rc;

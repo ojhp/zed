@@ -30,7 +30,7 @@ pub enum Expression {
     ByteVector(Vec<u8>),
 }
 
-/// A reference counted reference to an expression value.
+/// A counted reference to an expression value.
 pub type Expr = Rc<Expression>;
 
 impl Display for Expression {
