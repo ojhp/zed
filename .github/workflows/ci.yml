@@ -26,6 +26,8 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
+      - name: Install Rustfmt
+        run: rustup component add rustfmt
       - name: Install Clippy
         run: rustup component add clippy
       - name: Build
