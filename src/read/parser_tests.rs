@@ -2,9 +2,9 @@
 
 use test_case::test_case;
 
+use crate::data::test_helpers::*;
 use crate::data::*;
 use crate::read::*;
-use crate::data::test_helpers::*;
 
 #[test_case("#t" => boolean(true); "short true")]
 #[test_case("#f" => boolean(false); "short false")]
@@ -53,7 +53,7 @@ fn real_infinity_parsing(input: &str, positive: bool) {
 
     if let Expression::Number(Number::Real(n)) = *value {
         assert!(n.is_nan());
-        
+
         if positive {
             assert!(n.is_sign_positive());
             assert!(!n.is_sign_negative());
@@ -162,7 +162,7 @@ fn parse_single(input: &str) -> Expr {
         Ok(result) if result.len() < 1 => panic!("parsed no values"),
         Ok(result) if result.len() > 1 => panic!("parsed more than one value: {:?}", result),
         Err(err) => panic!("parser error: {}", err),
-        Ok(mut result) => result.pop().unwrap()
+        Ok(mut result) => result.pop().unwrap(),
     }
 }
 

@@ -142,29 +142,61 @@ trait Convert {
 }
 
 impl Convert for BigInt {
-    fn to_integer(&self) -> BigInt { self.clone() }
-    fn to_rational(&self) -> BigRational { BigRational::new(self.clone(), BigInt::one()) }
-    fn to_real(&self) -> f64 { self.to_f64().unwrap_or(NAN) }
-    fn to_complex(&self) -> Complex<f64> { Complex::new(self.to_real(), 0.0) }
+    fn to_integer(&self) -> BigInt {
+        self.clone()
+    }
+    fn to_rational(&self) -> BigRational {
+        BigRational::new(self.clone(), BigInt::one())
+    }
+    fn to_real(&self) -> f64 {
+        self.to_f64().unwrap_or(NAN)
+    }
+    fn to_complex(&self) -> Complex<f64> {
+        Complex::new(self.to_real(), 0.0)
+    }
 }
 
 impl Convert for BigRational {
-    fn to_integer(&self) -> BigInt { self.numer() / self.denom() }
-    fn to_rational(&self) -> BigRational { self.clone() }
-    fn to_real(&self) -> f64 { self.to_f64().unwrap_or(NAN) }
-    fn to_complex(&self) -> Complex<f64> { Complex::new(self.to_real(), 0.0) }
+    fn to_integer(&self) -> BigInt {
+        self.numer() / self.denom()
+    }
+    fn to_rational(&self) -> BigRational {
+        self.clone()
+    }
+    fn to_real(&self) -> f64 {
+        self.to_f64().unwrap_or(NAN)
+    }
+    fn to_complex(&self) -> Complex<f64> {
+        Complex::new(self.to_real(), 0.0)
+    }
 }
 
 impl Convert for f64 {
-    fn to_integer(&self) -> BigInt { BigInt::from_f64(*self).unwrap_or_else(BigInt::zero) }
-    fn to_rational(&self) -> BigRational { BigRational::from_f64(*self).unwrap_or_else(BigRational::zero) }
-    fn to_real(&self) -> f64 { *self }
-    fn to_complex(&self) -> Complex<f64> { Complex::new(*self, 0.0) }
+    fn to_integer(&self) -> BigInt {
+        BigInt::from_f64(*self).unwrap_or_else(BigInt::zero)
+    }
+    fn to_rational(&self) -> BigRational {
+        BigRational::from_f64(*self).unwrap_or_else(BigRational::zero)
+    }
+    fn to_real(&self) -> f64 {
+        *self
+    }
+    fn to_complex(&self) -> Complex<f64> {
+        Complex::new(*self, 0.0)
+    }
 }
 
 impl Convert for Complex<f64> {
-    fn to_integer(&self) -> BigInt { self.re.to_integer() }
-    fn to_rational(&self) -> BigRational { self.re.to_rational() }
-    fn to_real(&self) -> f64 { self.re }
-    fn to_complex(&self) -> Complex<f64> { *self }
+    fn to_integer(&self) -> BigInt {
+        self.re.to_integer()
+    }
+    fn to_rational(&self) -> BigRational {
+        self.re.to_rational()
+    }
+    fn to_real(&self) -> f64 {
+        self.re
+    }
+    fn to_complex(&self) -> Complex<f64> {
+        *self
+    }
 }

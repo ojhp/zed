@@ -47,7 +47,7 @@ impl Display for Expression {
                 '\t' => write!(f, "#\\tab"),
                 ' ' => write!(f, "#\\space"),
                 _ if ch.is_alphanumeric() || ch.is_ascii_graphic() => write!(f, "#\\{}", ch),
-                _ => write!(f, "#\\x{:x}", *ch as u32)
+                _ => write!(f, "#\\x{:x}", *ch as u32),
             }
         }
 
@@ -73,16 +73,20 @@ impl Display for Expression {
         }
 
         fn fmt_symbol(name: &str, f: &mut Formatter) -> FmtResult {
-            const SIMPLE_IDENTIFIER_PATTERN: &str = r"^[A-Za-z!$%&*/:<=>?^_~][-+A-Za-z0-9!$%&*/:<=>?^_~\.@]*$";
-            const PECULIAR_IDENTIFIER_PATTERN: &str = r"^[-+]([-+A-Za-z!$%&*/:<=>?^_~@][-+A-Za-z0-9!$%&*/:<=>?^_~\.@]*)?$";
-            const DOTTED_IDENTIFIER_PATTERN: &str = r"^[-+]?\.[-+A-Za-z!$%&*/:<=>?^_~@\.][-+A-Za-z0-9!$%&*/:<=>?^_~\.@]*$";
+            const SIMPLE_IDENTIFIER_PATTERN: &str =
+                r"^[A-Za-z!$%&*/:<=>?^_~][-+A-Za-z0-9!$%&*/:<=>?^_~\.@]*$";
+            const PECULIAR_IDENTIFIER_PATTERN: &str =
+                r"^[-+]([-+A-Za-z!$%&*/:<=>?^_~@][-+A-Za-z0-9!$%&*/:<=>?^_~\.@]*)?$";
+            const DOTTED_IDENTIFIER_PATTERN: &str =
+                r"^[-+]?\.[-+A-Za-z!$%&*/:<=>?^_~@\.][-+A-Za-z0-9!$%&*/:<=>?^_~\.@]*$";
 
             lazy_static! {
                 static ref UNQUOTED_IDENTIFIER_REGEX: RegexSet = RegexSet::new(&[
                     SIMPLE_IDENTIFIER_PATTERN,
                     PECULIAR_IDENTIFIER_PATTERN,
                     DOTTED_IDENTIFIER_PATTERN,
-                ]).unwrap();
+                ])
+                .unwrap();
             }
 
             if UNQUOTED_IDENTIFIER_REGEX.is_match(name) {
@@ -117,14 +121,18 @@ impl Display for Expression {
                 match current {
                     Expression::Nil => break,
                     Expression::Pair(a, d) => {
-                        if first { first = false; } else { write!(f, " ")?; }
+                        if first {
+                            first = false;
+                        } else {
+                            write!(f, " ")?;
+                        }
                         a.fmt(f)?;
                         current = d;
-                    },
+                    }
                     _ => {
                         write!(f, " . {}", current)?;
                         break;
-                    },
+                    }
                 }
             }
 
@@ -136,7 +144,11 @@ impl Display for Expression {
 
             let mut first = true;
             for item in items {
-                if first { first = false; } else { write!(f, " ")?; }
+                if first {
+                    first = false;
+                } else {
+                    write!(f, " ")?;
+                }
                 item.fmt(f)?;
             }
 
@@ -151,7 +163,7 @@ impl Display for Expression {
             Expression::Character(c) => fmt_char(c, f),
             Expression::String(s) => fmt_string(s, f),
             Expression::Symbol(n) => fmt_symbol(n, f),
-            p@Expression::Pair(_, _) => fmt_list(p, f),
+            p @ Expression::Pair(_, _) => fmt_list(p, f),
             Expression::Vector(es) => fmt_vector("#", es, f),
             Expression::ByteVector(bs) => fmt_vector("#u8", bs, f),
         }

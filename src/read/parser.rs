@@ -6,17 +6,17 @@ use crate::data::Expr;
 use crate::read::ReadResult;
 
 /// Reads a list of expression values from the given text.
-/// 
+///
 /// If the parser encounters any text that cannot be read as an
 /// expression, an error is returned. No partial parses are returned.
-/// 
+///
 /// # Example
 /// ```
 /// use zed::data::{Expression, Number};
 /// use zed::read::parse;
-/// 
+///
 /// let values = parse("#f a-symbol 4.2").unwrap();
-/// 
+///
 /// assert_eq!(Expression::Boolean(false), *values[0]);
 /// assert_eq!(Expression::Symbol(String::from("a-symbol")), *values[1]);
 /// assert_eq!(Expression::Number(Number::Real(4.2)), *values[2]);
@@ -211,7 +211,7 @@ parser! {
 fn parse_hex_char(escape: &str) -> Result<char, &'static str> {
     if let Ok(n) = u32::from_str_radix(escape, 16) {
         if let Ok(ch) = char::try_from(n) {
-            return Ok(ch)
+            return Ok(ch);
         }
     }
 

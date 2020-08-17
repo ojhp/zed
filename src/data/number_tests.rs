@@ -2,8 +2,8 @@
 
 use test_case::test_case;
 
-use crate::data::*;
 use crate::data::test_helpers::*;
+use crate::data::*;
 
 #[test_case("0"; "zero")]
 #[test_case("1234567890"; "large number")]
@@ -18,7 +18,10 @@ fn integer_formatting(int: &str) {
 #[test_case("1", "4"; "fraction")]
 #[test_case("-5", "6"; "negative")]
 fn rational_formatting(numer: &str, denom: &str) {
-    assert_eq!(format!("{}/{}", numer, denom), rational(numer, denom).to_string());
+    assert_eq!(
+        format!("{}/{}", numer, denom),
+        rational(numer, denom).to_string()
+    );
 }
 
 #[test_case(0.0, "0.0"; "zero")]
@@ -73,13 +76,17 @@ fn complex_formatting(re: f64, im: f64, expected: &str) {
 #[test_case(complex(12.3, 4.56), real(12.3) => false; "unequal complex and real")]
 #[test_case(complex(12.3, 4.56), complex(12.3, 4.56) => true; "equal complexes")]
 #[test_case(complex(12.3, 4.56), complex(1.23, 4.56) => false; "unequal complexes")]
-fn equality(left: Number, right: Number) -> bool { left == right }
+fn equality(left: Number, right: Number) -> bool {
+    left == right
+}
 
 #[test_case(integer("9876") => integer("-9876"); "integer negation")]
 #[test_case(rational("123", "456") => rational("-123", "456"); "rational negation")]
 #[test_case(real(38.65) => real(-38.65); "real negation")]
 #[test_case(complex(12.3, 4.56) => complex(-12.3, -4.56); "complex negation")]
-fn negation(value: Number) -> Number { -value }
+fn negation(value: Number) -> Number {
+    -value
+}
 
 #[test_case(integer("123"), integer("123") => integer("246"); "two integers")]
 #[test_case(integer("123"), rational("5", "4") => rational("497", "4"); "integer and rational")]
@@ -97,26 +104,36 @@ fn negation(value: Number) -> Number { -value }
 #[test_case(complex(12.3, 4.56), rational("5", "4") => complex(13.55, 4.56); "complex and rational")]
 #[test_case(complex(12.3, 4.56), real(12.3) => complex(24.6, 4.56); "complex and real")]
 #[test_case(complex(12.3, 4.56), complex(12.3, 4.56) => complex(24.6, 9.12); "two complexes")]
-fn addition(left: Number, right: Number) -> Number { left + right }
+fn addition(left: Number, right: Number) -> Number {
+    left + right
+}
 
 #[test_case(integer("123"), integer("56") => integer("67"); "two integers")]
 #[test_case(integer("86"), rational("5", "6") => rational("511", "6"); "integer and rational")]
 #[test_case(rational("55", "4"), real(-9.8) => real(23.55); "rational and real")]
 #[test_case(complex(2.6, 3.4), real(8.6) => complex(-6.0, 3.4); "complex and real")]
 #[test_case(complex(2.6, 3.4), complex(8.6, 1.2) => complex(-6.0, 2.2); "two complexes")]
-fn subtraction(left: Number, right: Number) -> Number { left - right }
+fn subtraction(left: Number, right: Number) -> Number {
+    left - right
+}
 
 #[test_case(integer("7"), integer("-8") => integer("-56"); "two integers")]
 #[test_case(rational("8", "7"), integer("9") => rational("72", "7"); "rational and integer")]
 #[test_case(real(2.5), rational("3", "4") => real(1.875); "real and rational")]
 #[test_case(real(2.0), complex(1.2, 3.4) => complex(2.4, 6.8); "real and complex")]
 #[test_case(complex(2.0, 3.0), complex(1.0, 4.0) => complex(-10.0, 11.0); "two complexes")]
-fn multiplication(left: Number, right: Number) -> Number { left * right }
+fn multiplication(left: Number, right: Number) -> Number {
+    left * right
+}
 
 #[test_case(integer("8"), integer("3") => integer("2"); "two integers")]
 #[test_case(rational("9", "5"), real(2.0) => real(0.9); "rational and real")]
-fn division(left: Number, right: Number) -> Number { left / right }
+fn division(left: Number, right: Number) -> Number {
+    left / right
+}
 
 #[test_case(integer("8"), integer("3") => integer("2"); "two integers")]
 #[test_case(rational("9", "5"), real(2.0) => real(1.8); "rational and real")]
-fn modulo(left: Number, right: Number) -> Number { left % right }
+fn modulo(left: Number, right: Number) -> Number {
+    left % right
+}

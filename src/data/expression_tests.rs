@@ -2,8 +2,8 @@
 
 use test_case::test_case;
 
-use crate::data::*;
 use crate::data::test_helpers::*;
+use crate::data::*;
 
 #[test]
 fn nil_formatting() {
