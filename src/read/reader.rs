@@ -13,18 +13,18 @@ pub trait Read {
 
 /// An implementation of the `Read` trait which takes input from a
 /// buffered reader and buffers results.
-/// 
+///
 /// #Example
 /// ```
 /// use std::io::BufReader;
 /// use std::rc::Rc;
-/// 
+///
 /// use zed::data::Expression;
 /// use zed::read::{Read, Reader};
-/// 
+///
 /// let input = "a (b . c)";
 /// let mut reader = Reader::new(BufReader::new(input.as_bytes()));
-/// 
+///
 /// assert_eq!(Expression::Symbol(String::from("a")), *reader.read().unwrap());
 /// assert_eq!(Expression::Pair(
 ///         Rc::new(Expression::Symbol(String::from("b"))),
