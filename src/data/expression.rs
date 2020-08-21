@@ -4,7 +4,7 @@ use std::rc::Rc;
 use lazy_static::lazy_static;
 use regex::RegexSet;
 
-use crate::data::Number;
+use crate::data::{Function, Number};
 
 /// An expression value.
 #[derive(Clone, Debug, PartialEq)]
@@ -28,6 +28,9 @@ pub enum Expression {
     Vector(Vec<Expr>),
     /// A vector consisting of zero or more bytes.
     ByteVector(Vec<u8>),
+    /// A function that can be applied to arguments as part of a
+    /// call form.
+    Function(Function),
 }
 
 /// A counted reference to an expression value.
@@ -166,6 +169,7 @@ impl Display for Expression {
             p @ Expression::Pair(_, _) => fmt_list(p, f),
             Expression::Vector(es) => fmt_vector("#", es, f),
             Expression::ByteVector(bs) => fmt_vector("#u8", bs, f),
+            Expression::Function(func) => func.fmt(f),
         }
     }
 }

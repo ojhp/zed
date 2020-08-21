@@ -18,7 +18,7 @@ use crate::eval::*;
 #[test_case(byte_vector(vec![1, 2, 3, 4]); "byte vector value")]
 fn simple_evaluation(value: Expr) {
     let env = Environment::empty();
-    let result = Evaluator.eval(value.clone(), &env).unwrap();
+    let result = Evaluator.eval(&value, &env).unwrap();
 
     assert_eq!(value, result);
 }
@@ -35,4 +35,26 @@ fn variable_lookup(name: &str, value: Expr, depth: usize) {
     }
 
     assert_eq!(value, env.get(name).unwrap());
+}
+
+#[test]
+fn function_call() {
+    let env = Environment::empty();
+    env.define(
+        "concat",
+        &function(primitive("concat", None, None, concat_primitive)),
+    );
+    env.define("a", &boolean(true));
+    env.define("b", &number(complex(1.2, 3.4)));
+    env.define("c", &byte_vector(vec![5, 6, 7, 8]));
+    let expr = list(vec![
+        symbol("concat"),
+        symbol("a"),
+        symbol("b"),
+        symbol("c"),
+    ]);
+
+    let result = Evaluator.eval(&expr, &env);
+
+    assert_eq!(string("#t, 1.2+3.4i, #u8(5 6 7 8)"), result.unwrap());
 }

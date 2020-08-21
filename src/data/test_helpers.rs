@@ -1,5 +1,6 @@
 #![cfg(test)]
 
+use std::error::Error;
 use std::rc::Rc;
 
 use num::{BigInt, BigRational, Complex, Num};
@@ -22,6 +23,15 @@ pub fn real(value: f64) -> Number {
 
 pub fn complex(re: f64, im: f64) -> Number {
     Number::Complex(Complex::new(re, im))
+}
+
+pub fn primitive(
+    name: &str,
+    min: Option<usize>,
+    max: Option<usize>,
+    func: PrimitiveFn,
+) -> Function {
+    Function::Primitive(String::from(name), ArgBounds { min, max }, func)
 }
 
 pub fn nil() -> Expr {
@@ -68,4 +78,17 @@ pub fn vector(items: Vec<Expr>) -> Expr {
 
 pub fn byte_vector(items: Vec<u8>) -> Expr {
     Rc::new(Expression::ByteVector(items))
+}
+
+pub fn function(func: Function) -> Expr {
+    Rc::new(Expression::Function(func))
+}
+
+pub fn concat_primitive(args: Vec<Expr>) -> Result<Expr, Box<dyn Error>> {
+    if args.len() == 0 {
+        return Err("failed in call".into());
+    }
+
+    let text = args.iter().map(|a| a.to_string()).collect::<Vec<String>>();
+    Ok(string(&text.join(", ")))
 }
