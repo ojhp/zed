@@ -6,6 +6,8 @@ edition = "2018"
 
 [dependencies]
 num = "0.3"
+peg = "0.6"
+rustyline = "7"
 
 [dev-dependencies]
 test-case = "1"

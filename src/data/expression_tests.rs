@@ -18,3 +18,17 @@ use crate::data::test_helpers::*;
 fn equality(a: Expr, b: Expr) -> bool {
     a == b
 }
+
+#[test_case(nil() => "()"; "nil value")]
+#[test_case(number(integer(-5)) => "-5"; "integral number")]
+#[test_case(number(real(12.34)) => "12.34"; "real number")]
+#[test_case(symbol("+") => "+"; "simple symbol")]
+#[test_case(symbol("test") => "test"; "text symbol")]
+#[test_case(symbol("quoted name") => "|quoted name|"; "quoted symbol")]
+#[test_case(symbol("escaped\nname\u{0}") => "|escaped\\nname\\x0;|"; "escaped symbol")]
+#[test_case(pair(symbol("a"), symbol("b")) => "(a . b)"; "simple pair")]
+#[test_case(pair(symbol("a"), pair(symbol("b"), symbol("c"))) => "(a b . c)"; "dotted list")]
+#[test_case(list!(symbol("a"), symbol("b"), symbol("c")) => "(a b c)"; "regular list")]
+fn formatting(value: Expr) -> String {
+    value.to_string()
+}
