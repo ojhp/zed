@@ -28,4 +28,8 @@ impl<T: Read<Output=String>> Read for ExprReader<T> {
             self.buffer = exprs.into_iter().rev().collect();
         }
     }
+
+    fn clear_buffer(&mut self) {
+        self.buffer.clear();
+    }
 }
